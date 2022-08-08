@@ -1,5 +1,3 @@
-import { useMyContext } from "../src/context/state";
-import styles from "../styles/Home.module.css";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
@@ -14,8 +12,18 @@ class vector2 {
     this.y = y;
     return this;
   }
-  dist(x1, y1) {
-    return Math.sqrt((x1 - this.x) ** 2 + (y1 - this.y) ** 2);
+  dist(vec) {
+    return Math.sqrt((vec.x - this.x) ** 2 + (vec.y - this.y) ** 2);
+  }
+  scalar(c) {
+    this.x *= c
+    this.y *= c
+    return this
+  }
+  add(vec) {
+    this.x += vec.x
+    this.y += vec.y
+    return this
   }
   static rndPos(x, y) {
     return new vector2(Math.random() * x, Math.random() * y);
@@ -45,9 +53,11 @@ export default function Test() {
     trial = 0;
   const oneset = dd.length * dt.length * rd.length;
   const order = [...Array(oneset)].map((_, i) => i);
-  const ppm = 400 / 40; //仮の数字
+  const ppm = 400 / 50; //仮の数字
   const stWidth = 6; // 開始ターゲットの大きさ
-  const A = 2; // ターゲット同氏の距離
+  const A = 20; // ターゲット同氏の距離
+  const dtw = 5// ターゲットと障害物の幅
+  const margin = (dd[dd.length - 1] + dt[dt.length - 1]) / 2 + dtw
   const tpos = new vector2();
   let ctx;
   // state
@@ -57,25 +67,50 @@ export default function Test() {
     state = 0;
 
   // ターゲットの描画更新
-  const drawNextTarget = (x, y, st = -1) => {
+  const drawNextTarget = (pos, st = -1) => {
     const tw = st > 0 ? st : dd[order[trial] % 3];
-    const dw = dt[(order[trial] / 3) % 3];
+    const dw = dt[Math.floor(order[trial] / 3) % 3];
+    const dr = rd[Math.floor(order[trial] / 9) % 3]
     ctx.clearRect(0, 0, width, height);
     ctx.beginPath();
-    ctx.arc(x, y, tw * ppm, 0, Math.PI * 2, true);
+    ctx.arc(pos.x, pos.y, tw * ppm / 2, 0, Math.PI * 2, true);
     ctx.fillStyle = "green";
     ctx.fill();
     // TODO:障害物を描画
+    if (st < 0)
+      switch (dr) {
+        case 0:// 左右
+
+          break;
+        case 1:// 上下
+
+          break;
+        case 2:// 上下左右
+
+          break;
+
+        default:
+          break;
+      }
+
+    // debug
+    ctx.fillText(`trial: ${trial} set: ${set}`, 10, 10)
   };
 
   // 次のターゲットの位置
-  const nextTargetPos=(pos, theta)=>{
-    
+  const nextTargetPos = (pos, theta) => {
+    const delta = new vector2(Math.cos(theta), Math.sin(theta)).scalar(A * ppm)
+    return delta.add(pos)
+  }
+
+  // 座標が画面内（マージンあり）か
+  const inDisplay = (vec) => {
+    //return true
+     return vec.x > margin && vec.y > margin && vec.x < width - margin && vec.y - height - margin
   }
 
   // 次の試行へ
   const nextTrial = () => {
-    // TODO:記録
     // 成功フィードバック、赤く＋音
     ctx.fillStyle = "red";
     ctx.fill();
@@ -84,27 +119,46 @@ export default function Test() {
     // 次の試行へ
     window.setTimeout(() => {
       state = 1;
-      const theta = Math.random(Math.PI * 2);
-      drawNextTarget(tpos.x + Math.cos(theta), tpos.y + Math.sin(theta));
+      trial++
+      // 1setが終わったら
+      if (trial >= oneset) {
+        trial = 0
+        set++
+      }
+      // TODO:2setごとに休憩
+
+      // 次のターゲットが画面に収まるか判定
+      let theta = 0
+      do {
+        theta = Math.random() * Math.PI * 2;
+        console.log(nextTargetPos(tpos,theta));
+      } while (!inDisplay(nextTargetPos(tpos, theta)));
+      tpos = nextTargetPos(tpos, theta)
+      drawNextTarget(tpos);
     }, 200);
   };
 
   // タッチイベント、ここで記録＆次の条件へ
   const touchEvent = (e) => {
-    // console.log(e);
-    // console.log({ type: e.type, x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY, time: e.timeStamp });
     const mpos = new vector2(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+    // TODO:記録
+    // { type: e.type, x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY, time: e.timeStamp }
+    if (!(e.type == "touchend" || e.type == "touchcancel")) return
     switch (state) {
       case 0:
         // 開始ターゲットをクリック
-        if (mpos.dist(width / 2, height / 2) < stWidth * ppm) {
-          state = 1;
+        if (mpos.dist(tpos) < stWidth * ppm) {
+          state = 2;
           order = shuffle(order);
           nextTrial();
         }
         break;
       case 1:
         // ターゲットをタッチ
+        if (mpos.dist(tpos) < dd[order[trial] % 3] * ppm) {
+          state = 2
+          nextTrial()
+        }
         // 障害物をタッチ
         // TODO:beap音
         break;
@@ -131,8 +185,8 @@ export default function Test() {
 
     // 開始ターゲット
     ctx = c.getContext("2d");
-    drawNextTarget(width / 2, height / 2, stWidth);
     tpos.set(width / 2, height / 2);
+    drawNextTarget(tpos, stWidth);
     ctx.imageSmoothingEnabled = false;
   });
 
