@@ -42,22 +42,25 @@ export default function Test() {
   const router = useRouter();
   const { number, name, teiji } = router.query;
   console.log(number, name, teiji);
-  // ターゲット直径{3,5,7}、障害物直径{3,5,7}、障害物配置{rl,ud,rlud},set{1-20}
-  // set:1-2は練習、2セットごとに小休憩
-  // trial{1-27}、3x3x3
-  // 初期位置は画面中心6mm
-  const dd = [3, 5, 7],
-    dt = [3, 5, 7],
-    rd = [0, 1, 2]
-  let set = 0,
-    trial = 0;
-  // debug
-  // const dd = [7],
-  //   dt = [7],
+  //// ターゲット直径{3,5,7}、障害物直径{3,5,7}、障害物配置{rl,ud,rlud},set{1-20}
+  //// set:1-2は練習、2セットごとに小休憩
+  //// trial{1-27}、3x3x3
+  //// 初期位置は画面中心6mm
+  // const dd = [3, 5, 7],
+  //   dt = [3, 5, 7],
   //   rd = [0, 1, 2]
   // let set = 0,
   //   trial = 0;
-  const oneset = dd.length * dt.length * rd.length;
+  // const MAXSET = 20
+  // FIXME:debug
+  const dd = [7],
+    dt = [7],
+    rd = [0, 1, 2]
+  let set = 0,
+    trial = 0;
+  const MAXSET = 4
+  // ここまで
+  const oneset = dd.length * dt.length * rd.length;// 1セットの試行数
   const order = [...Array(oneset)].map((_, i) => i);
   const ppm = 414 / 68.5; //仮の数字
   const stWidth = 6; // 開始ターゲットの大きさ
@@ -116,7 +119,7 @@ export default function Test() {
     ctx.fillStyle = "green";
     drawTarget(pos, 0, 0, tw)
 
-    // debug
+    // FIXME:debug
     ctx.fillText(`trial: ${trial} set: ${set} width: ${width}`, 10, 10)
   };
 
@@ -132,8 +135,21 @@ export default function Test() {
     return vec.x > margin && vec.y > margin && vec.x < width - margin && vec.y < height - margin
   }
 
+  // 実験データを実機に保存
+  const dataSave = () => {
+    const url = URL.createObjectURL(new Blob([JSON.stringify(data)], { type: "application/zip" }));
+    const a = document.createElement("a");
+    document.body.appendChild(a);
+    a.download = Date.now() + '.json';
+    a.href = url;
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
   // 次の試行へ
   const nextTrial = () => {
+    let interval = false
     // 成功フィードバック、赤く＋音
     ctx.fillStyle = "red";
     ctx.fill()
@@ -147,19 +163,29 @@ export default function Test() {
       if (trial >= oneset) {
         trial = 0
         set++
+        // 2setごとに休憩
+        if (set % 2 == 0) {
+          trial = -1
+          state = 0
+          // 開始ターゲット
+          tpos.set(width / 2, height / 2);
+          drawNextTarget(tpos, stWidth);
+          interval = true
+        }
 
-        //debug
-        console.log(JSON.stringify(data));
-        const url = URL.createObjectURL(new Blob([JSON.stringify(data)], { type: "application/zip" }));
-        const a = document.createElement("a");
-        document.body.appendChild(a);
-        a.download = Date.now() + '.json';
-        a.href = url;
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
+        // データ保存
+        if (set >= MAXSET) {
+          console.log(JSON.stringify(data));
+          dataSave()
+          // 終了画面
+          state = 3
+          ctx.clearRect(0, 0, width, height);
+          ctx.fillStyle = "black"
+          ctx.fillText(`終了です`, width / 2, height / 2)
+        }
       }
-      // TODO:2setごとに休憩
+      if (interval) return
+
 
       // 次のターゲットが画面に収まるか判定
       let theta = 0
@@ -178,13 +204,12 @@ export default function Test() {
     const tw = dd[order[trial] % dd.length]
     const dw = dt[Math.floor(order[trial] / dd.length) % dt.length];
     const dp = rd[Math.floor(order[trial] / (dd.length * dt.length)) % rd.length]
-    // TODO:記録
-    if (trial >= 0)
-      data.push({
-        type: e.type, mx: mpos.x, my: mpos.y, tx: tpos.x, ty: tpos.y, targetW: tw, distractorW: dw,
-        distractorP: dp, time: e.timeStamp
-      })
-    // console.log(JSON.stringify(data));
+    // 記録
+    data.push({
+      pnum: number, teiji: teiji, set: set, trial: trial,
+      type: e.type, mx: mpos.x, my: mpos.y, tx: tpos.x, ty: tpos.y, targetW: tw, distractorW: dw,
+      distractorP: dp, time: e.timeStamp
+    })
     if (!(e.type == "touchend" || e.type == "touchcancel")) return
     switch (state) {
       case 0:
@@ -201,8 +226,8 @@ export default function Test() {
           state = 2
           nextTrial()
         }
-        // 障害物をタッチ
-        // TODO:beap音
+        // TODO:障害物をタッチ
+        // beap音
         break;
 
       default:
