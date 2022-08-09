@@ -1,13 +1,13 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext } from 'react'
 
-const MyContext = createContext();
+const MyContext = createContext()
 
-export function MyProvider({ children }) {
-  const sharedState = { number: 0, name: "name" };
+export function MyProvider ({ children }) {
+  const sharedState = { number: 0, name: 'name' }
 
-  return <MyContext.Provider value={sharedState}>{children}</MyContext.Provider>;
+  return <MyContext.Provider value={sharedState}>{children}</MyContext.Provider>
 }
 
-export function useMyContext() {
-  return useContext(MyContext);
+export function useMyContext () {
+  return useContext(MyContext)
 }
