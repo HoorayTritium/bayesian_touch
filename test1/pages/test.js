@@ -66,8 +66,7 @@ export default function Test() {
   const stWidth = 6; // 開始ターゲットの大きさ
   const A = 20; // ターゲット同氏の距離
   const dtw = 0.5// ターゲットと障害物の幅
-  const margin = ((dd[dd.length - 1] + dt[dt.length - 1]) / 2 + dtw) * ppm + 10
-
+  const margin = (dd[dd.length - 1] / 2 + dt[dt.length - 1] + dtw) * ppm + 2
   let data = [];// 実験結果
 
   const tpos = new vector2();
@@ -120,6 +119,7 @@ export default function Test() {
     drawTarget(pos, 0, 0, tw)
 
     // FIXME:debug
+    ctx.font = '10px メイリオ';
     ctx.fillText(`trial: ${trial} set: ${set} width: ${width}`, 10, 10)
   };
 
@@ -131,7 +131,6 @@ export default function Test() {
 
   // 座標が画面内（マージンあり）か
   const inDisplay = (vec) => {
-    //return true
     return vec.x > margin && vec.y > margin && vec.x < width - margin && vec.y < height - margin
   }
 
@@ -171,6 +170,9 @@ export default function Test() {
           tpos.set(width / 2, height / 2);
           drawNextTarget(tpos, stWidth);
           interval = true
+          ctx.fillStyle = "black"
+          ctx.font = '50px メイリオ'
+          ctx.fillText(`休憩です`, width / 2 - 50, height / 2 - 50)
         }
 
         // データ保存
@@ -181,6 +183,7 @@ export default function Test() {
           state = 3
           ctx.clearRect(0, 0, width, height);
           ctx.fillStyle = "black"
+          ctx.font = '50px メイリオ'
           ctx.fillText(`終了です`, width / 2, height / 2)
         }
       }
