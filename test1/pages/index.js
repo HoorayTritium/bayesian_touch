@@ -1,24 +1,23 @@
 import styles from "../styles/Home.module.css";
 import { useMyContext } from "../src/context/state";
 import { useRouter } from "next/router";
-import Link from "next/link";
 
 export default function Home() {
   const router = useRouter();
   const context = useMyContext();
   const num = 0,
     pName = "",
-    prac = false;
+    teiji = "";
   const onChange = (e) => {
     // console.log(e.target);
     if (e.target.name == "number") {
       num = e.target.value;
     } else if (e.target.name == "name") {
       pName = e.target.value;
-    } else if (e.target.name == "practise") {
-      prac = e.target.checked;
+    } else if (e.target.name == "teiji") {
+      teiji = e.target.value;
     }
-    console.log(num, pName, prac);
+    console.log(num, pName, teiji);
   };
   const onSubmit =()=>{
     if (!pName) {
@@ -26,7 +25,7 @@ export default function Home() {
     }
     router.push({
       pathname:"/test",
-      query: { number: num, name: pName, practise: prac }
+      query: { number: num, name: pName, teiji: teiji }
     })
   }
 
@@ -49,6 +48,11 @@ export default function Home() {
         <label>
           名前：
           <input type="text" onChange={onChange} name="name" />
+        </label>
+        <br />
+        <label>
+          提示順序：
+          <input type="number" onChange={onChange} name="teiji" />
         </label>
         <br />
         <button onClick={onSubmit}>開始</button>

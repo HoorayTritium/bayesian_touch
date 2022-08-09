@@ -1,7 +1,5 @@
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import fs from "fs";
-import ExcelJS from "exceljs";
 
 class vector2 {
   constructor(x = 0, y = 0) {
@@ -68,13 +66,6 @@ export default function Test() {
   const margin = ((dd[dd.length - 1] + dt[dt.length - 1]) / 2 + dtw) * ppm + 10
 
   let data = [];// 実験結果
-  // Workbookの作成
-  const workbook = new ExcelJS.Workbook();
-  // Workbookに新しいWorksheetを追加
-  workbook.addWorksheet('My Sheet');
-  // ↑で追加したWorksheetを参照し変数に代入
-  const worksheet = workbook.getWorksheet('My Sheet');
-
 
   const tpos = new vector2();
   let ctx;
@@ -137,7 +128,7 @@ export default function Test() {
   // 座標が画面内（マージンあり）か
   const inDisplay = (vec) => {
     //return true
-    return vec.x > margin && vec.y > margin && vec.x < width - margin && vec.y - height - margin
+    return vec.x > margin && vec.y > margin && vec.x < width - margin && vec.y < height - margin
   }
 
   // 次の試行へ
