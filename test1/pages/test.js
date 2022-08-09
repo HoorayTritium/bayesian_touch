@@ -46,17 +46,17 @@ export default function Test() {
   // set:1-2は練習、2セットごとに小休憩
   // trial{1-27}、3x3x3
   // 初期位置は画面中心6mm
-  // const dd = [3, 5, 7],
-  //   dt = [3, 5, 7],
-  //   rd = [0, 1, 2],
-  //   let set = 0,
-  //    trial = 0;
-  // debug
-  const dd = [7],
-    dt = [7],
+  const dd = [3, 5, 7],
+    dt = [3, 5, 7],
     rd = [0, 1, 2]
   let set = 0,
     trial = 0;
+  // debug
+  // const dd = [7],
+  //   dt = [7],
+  //   rd = [0, 1, 2]
+  // let set = 0,
+  //   trial = 0;
   const oneset = dd.length * dt.length * rd.length;
   const order = [...Array(oneset)].map((_, i) => i);
   const ppm = 414 / 68.5; //仮の数字
