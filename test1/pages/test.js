@@ -40,8 +40,8 @@ const shuffle = ([...array]) => {
 export default function Test() {
   // 変数の初期化
   const router = useRouter();
-  const { number, name, practise } = router.query;
-  console.log(number, name, practise);
+  const { number, name, teiji } = router.query;
+  console.log(number, name, teiji);
   // ターゲット直径{3,5,7}、障害物直径{3,5,7}、障害物配置{rl,ud,rlud},set{1-20}
   // set:1-2は練習、2セットごとに小休憩
   // trial{1-27}、3x3x3
@@ -49,8 +49,8 @@ export default function Test() {
   // const dd = [3, 5, 7],
   //   dt = [3, 5, 7],
   //   rd = [0, 1, 2],
-  //   set = 0,
-  //   trial = 0;
+  //   let set = 0,
+  //    trial = 0;
   // debug
   const dd = [7],
     dt = [7],
@@ -75,6 +75,7 @@ export default function Test() {
     height = 0,
     state = 0;
 
+  // ターゲット描画
   const drawTarget = (pos, dx, dy, w) => {
     ctx.beginPath();
     ctx.arc(pos.x + dx, pos.y + dy, w * ppm / 2, 0, Math.PI * 2, true);
