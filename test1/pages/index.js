@@ -2,22 +2,22 @@ import styles from '../styles/Home.module.css'
 import { useMyContext } from '../src/context/state'
 import { useRouter } from 'next/router'
 
-export default function Home () {
+export default function Home() {
   const router = useRouter()
   const context = useMyContext()
   const num = 0
   const pName = ''
-  const teiji = ''
+  const bias = 'バランス'
   const onChange = (e) => {
     // console.log(e.target);
     if (e.target.name === 'number') {
       num = e.target.value
     } else if (e.target.name === 'name') {
       pName = e.target.value
-    } else if (e.target.name === 'teiji') {
-      teiji = e.target.value
+    } else if (e.target.name === 'bias') {
+      bias = e.target.value
     }
-    console.log(num, pName, teiji)
+    console.log(num, pName, bias)
   }
   const onSubmit = () => {
     if (!pName) {
@@ -25,8 +25,11 @@ export default function Home () {
     }
     router.push({
       pathname: '/test',
-      query: { number: num, name: pName, teiji }
+      query: { number: num, name: pName, bias: bias }
     })
+  }
+  const storageClear = () => {
+    window.localStorage.clear()
   }
 
   return (
@@ -51,10 +54,16 @@ export default function Home () {
       <br />
       <label>
         提示順序：
-        <input type='number' onChange={onChange} name='teiji' />
+        <select onChange={onChange} name='bias'>
+          <option>バランス</option>
+          <option>速さ重視</option>
+          <option>正確重視</option>
+        </select>
       </label>
       <br />
       <button onClick={onSubmit}>開始</button>
+      <br />
+      <button onClick={storageClear}>クリア</button>
 
       {/* <Link href={{ pathname: "/test", query: { number: num, name: pName, practise: prac } }}>
         <button>開始</button>

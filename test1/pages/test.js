@@ -37,7 +37,7 @@ class vector2 {
 const shuffle = ([...array]) => {
   for (let i = array.length - 1; i >= 0; i--) {
     const j = Math.floor(Math.random() * (i + 1))
-    ;[array[i], array[j]] = [array[j], array[i]]
+      ;[array[i], array[j]] = [array[j], array[i]]
   }
   return array
 }
@@ -45,26 +45,27 @@ const shuffle = ([...array]) => {
 export default function Test() {
   // 変数の初期化
   const router = useRouter()
-  const { number, name, teiji } = router.query
-  console.log(number, name, teiji)
+  const { number, name, bias } = router.query
+  console.log(number, name, bias)
   /// / ターゲット直径{3,5,7}、障害物直径{3,5,7}、障害物配置{rl,ud,rlud},set{1-20}
   /// / set:1-2は練習、2セットごとに小休憩
   /// / trial{1-27}、3x3x3
   /// / 初期位置は画面中心6mm
-  const dd = [3, 5, 7]
-  const dt = [3, 5, 7]
-  const rd = [0, 1, 2]
-  let set = 0
-  let trial = 0
-  const MAXSET = 20
-  // // FIXME:debug
-  // const dd = [7]
-  // const dt = [7]
+  // const dd = [3, 5, 7]
+  // const dt = [3, 5, 7]
   // const rd = [0, 1, 2]
   // let set = 0
   // let trial = 0
-  // const MAXSET = 4
+  // const MAXSET = 20
+  // // FIXME:debug
+  const dd = [7]
+  const dt = [7]
+  const rd = [0, 1, 2]
+  let set = 0
+  let trial = 0
+  const MAXSET = 4
   // // ここまで
+  const rds = ["左右", "上下", "上下左右"]
   const oneset = dd.length * dt.length * rd.length // 1セットの試行数
   let order = [...Array(oneset)].map((_, i) => i)
   const ppm = 414 / 68.5 // 仮の数字
@@ -142,7 +143,7 @@ export default function Test() {
 
   // 実験データを実機に保存
   const dataSave = () => {
-    const url = URL.createObjectURL(new Blob([JSON.stringify(data)], { type: 'application/zip' }))
+    const url = URL.createObjectURL(new Blob([JSON.stringify(data)], { type: 'application/json' }))
     const a = document.createElement('a')
     document.body.appendChild(a)
     a.download = Date.now() + '.json'
@@ -218,21 +219,22 @@ export default function Test() {
     const dw = dt[Math.floor(order[trial] / dd.length) % dt.length]
     const dp = rd[Math.floor(order[trial] / (dd.length * dt.length)) % rd.length]
     // 記録
-    data.push({
-      pnum: number,
-      teiji,
-      set,
-      trial,
-      type: e.type,
-      mx: mpos.x,
-      my: mpos.y,
-      tx: tpos.x,
-      ty: tpos.y,
-      targetW: tw,
-      distractorW: dw,
-      distractorP: dp,
-      time: e.timeStamp,
-    })
+    if (state != 3)
+      data.push({
+        pnum: Number(number),
+        bias,
+        set,
+        trial,
+        type: e.type,
+        mx: mpos.x,
+        my: mpos.y,
+        tx: tpos.x,
+        ty: tpos.y,
+        targetW: tw,
+        distractorW: dw,
+        distractorP: rds[dp],
+        time: e.timeStamp,
+      })
     window.localStorage.setItem(number + 'data', JSON.stringify(data))
     if (!(e.type === 'touchend' || e.type === 'touchcancel')) return
     switch (state) {
@@ -252,6 +254,10 @@ export default function Test() {
         }
         // TODO:障害物をタッチ
         // beap音
+        break
+
+      case 3:
+        dataSave()
         break
 
       default:
