@@ -211,6 +211,7 @@ export default function Test() {
 
   // タッチイベント、ここで記録＆次の条件へ
   const touchEvent = (e) => {
+    const time = Date.now()
     if (e.type === 'touchmove') {
       e.preventDefault()
     }
@@ -233,7 +234,7 @@ export default function Test() {
         targetW: tw,
         distractorW: dw,
         distractorP: rds[dp],
-        time: e.timeStamp,
+        time,
       })
     window.localStorage.setItem(number + 'data', JSON.stringify(data))
     if (!(e.type === 'touchend' || e.type === 'touchcancel')) return

@@ -23,6 +23,7 @@ export default function Home() {
     if (!pName) {
       return
     }
+    storageClear()
     router.push({
       pathname: '/test',
       query: { number: num, name: pName, bias: bias }
@@ -63,7 +64,7 @@ export default function Home() {
       <br />
       <button onClick={onSubmit}>開始</button>
       <br />
-      <button onClick={storageClear}>クリア</button>
+      {/* <button onClick={storageClear}>クリア</button> */}
 
       {/* <Link href={{ pathname: "/test", query: { number: num, name: pName, practise: prac } }}>
         <button>開始</button>
