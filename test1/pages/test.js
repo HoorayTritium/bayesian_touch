@@ -72,6 +72,7 @@ export default function Test() {
   const stWidth = 6 // 開始ターゲットの大きさ
   const A = 20 // ターゲット同氏の距離
   const dtw = 0.5 // ターゲットと障害物の幅
+  const preTime = 200
   const margin = (dd[dd.length - 1] / 2 + dt[dt.length - 1] + dtw) * ppm + 2
   let data = [] // 実験結果
   let localData = []
@@ -206,7 +207,7 @@ export default function Test() {
       drawNextTarget(tpos)
       localData = { set, trial, order, tpos }
       window.localStorage.setItem(number + 'ldata', JSON.stringify(localData))
-    }, 200)
+    }, preTime)
   }
 
   // タッチイベント、ここで記録＆次の条件へ
