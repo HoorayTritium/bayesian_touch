@@ -70,7 +70,7 @@ export default function Test() {
   let order = [...Array(oneset)].map((_, i) => i)
   // FIXME:実機に合わせて変更
   // const ppm = 414 / 68.5 // 仮の数字
-  const ppm = 264 / 2.54// iPad Pro (12.9-Inch) (第2世代)
+  const ppm = 264 / 25.4// iPad Pro (12.9-Inch) (第2世代)
   const stWidth = 6 // 開始ターゲットの大きさ
   const A = 20 // ターゲット同氏の距離
   const dtw = 0.5 // ターゲットと障害物の幅
