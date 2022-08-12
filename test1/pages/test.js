@@ -1,37 +1,37 @@
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
-import Head from "next/head";
+import Head from 'next/head'
 
 class vector2 {
-  constructor(x = 0, y = 0) {
+  constructor (x = 0, y = 0) {
     this.x = x
     this.y = y
   }
 
   // xとyをセットする
-  set(x, y) {
+  set (x, y) {
     this.x = x
     this.y = y
     return this
   }
 
-  dist(vec) {
+  dist (vec) {
     return Math.sqrt((vec.x - this.x) ** 2 + (vec.y - this.y) ** 2)
   }
 
-  scalar(c) {
+  scalar (c) {
     this.x *= c
     this.y *= c
     return this
   }
 
-  add(vec) {
+  add (vec) {
     this.x += vec.x
     this.y += vec.y
     return this
   }
 
-  static rndPos(x, y) {
+  static rndPos (x, y) {
     return new vector2(Math.random() * x, Math.random() * y)
   }
 }
@@ -42,29 +42,37 @@ const shuffle = ([...array]) => {
   }
   return array
 }
+const toBoolean = (s, def) => {
+  switch (s) {
+    case 'true':
+    case '1':
+    case 'on':
+      return true
+    case 'false':
+    case '0':
+    case 'off':
+      return false
+  }
+  return def
+}
 
-export default function Test() {
+export default function Test () {
   // 変数の初期化
   const router = useRouter()
-  const { number, name, bias } = router.query
-  console.log(number, name, bias)
+  const { number, name, bias, debug } = router.query
+  console.log(number, name, bias, debug)
+  const isDebug = toBoolean(debug)
   /// / ターゲット直径{3,5,7}、障害物直径{3,5,7}、障害物配置{rl,ud,rlud},set{1-20}
   /// / set:1-2は練習、2セットごとに小休憩
   /// / trial{1-27}、3x3x3
   /// / 開始タ−ゲットは画面中心6mm
-  // const dd = [3, 5, 7]
-  // const dt = [3, 5, 7]
-  // const rd = [0, 1, 2]
-  // const MAXSET = 20
+  const dd = isDebug ? [7] : [3, 5, 7]
+  const dt = isDebug ? [7] : [3, 5, 7]
+  const rd = [0, 1, 2]
+  const MAXSET = isDebug ? 4 : 20
   let set = 0
   let trial = 0
-  // // FIXME:debug
-  const dd = [7]
-  const dt = [7]
-  const rd = [0, 1, 2]
-  const MAXSET = 4
-  // // ここまで
-  const rds = ["左右", "上下", "上下左右"]
+  const rds = ['左右', '上下', '上下左右']
   const oneset = dd.length * dt.length * rd.length // 1セットの試行数
   let order = [...Array(oneset)].map((_, i) => i)
   // FIXME:実機に合わせて変更
@@ -146,7 +154,7 @@ export default function Test() {
 
   // 実験データを実機に保存
   const dataSave = () => {
-    const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
+    const bom = new Uint8Array([0xEF, 0xBB, 0xBF])
     const url = URL.createObjectURL(new Blob([bom, JSON.stringify(data)], { type: 'application/json' }))
     const a = document.createElement('a')
     document.body.appendChild(a)
@@ -225,7 +233,7 @@ export default function Test() {
     const dp = rd[Math.floor(order[trial] / (dd.length * dt.length)) % rd.length]
     // console.log(mpos);
     // 記録
-    if (state != 3)
+    if (state != 3) {
       data.push({
         pnum: Number(number),
         bias,
@@ -239,8 +247,9 @@ export default function Test() {
         targetW: tw,
         distractorW: dw,
         distractorP: rds[dp],
-        time,
+        time
       })
+    }
     window.localStorage.setItem(number + 'data', JSON.stringify(data))
     if (!(e.type === 'touchend' || e.type === 'touchcancel')) return
     switch (state) {
@@ -280,8 +289,8 @@ export default function Test() {
     })
     const c = document.getElementById('canvas')
     // canvasを画面いっぱいに広げる
-    c.style.width = document.body.offsetWidth + "px"
-    c.style.height = document.body.offsetHeight + "px"
+    c.style.width = document.body.offsetWidth + 'px'
+    c.style.height = document.body.offsetHeight + 'px'
     c.width = document.body.offsetWidth * window.devicePixelRatio
     c.height = document.body.offsetHeight * window.devicePixelRatio
     width = document.body.offsetWidth * window.devicePixelRatio
@@ -317,11 +326,11 @@ export default function Test() {
   })
 
   return (
-    <div id="wrapper">
+    <div id='wrapper'>
       <Head>
-        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+        <meta name='viewport' content='initial-scale=1.0, width=device-width' />
       </Head>
-      <canvas id="canvas" width height />
+      <canvas id='canvas' width height />
     </div>
   )
 }

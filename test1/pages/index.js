@@ -1,13 +1,12 @@
 import styles from '../styles/Home.module.css'
-import { useMyContext } from '../src/context/state'
 import { useRouter } from 'next/router'
 
-export default function Home() {
+export default function Home () {
   const router = useRouter()
-  const context = useMyContext()
   const num = 0
   const pName = ''
   const bias = 'バランス'
+  const debug = false
   const onChange = (e) => {
     // console.log(e.target);
     if (e.target.name === 'number') {
@@ -16,8 +15,10 @@ export default function Home() {
       pName = e.target.value
     } else if (e.target.name === 'bias') {
       bias = e.target.value
+    } else if (e.target.name === 'practise') {
+      debug = e.target.checked
     }
-    console.log(num, pName, bias)
+    console.log(num, pName, bias, debug)
   }
   const onSubmit = () => {
     if (!pName) {
@@ -26,7 +27,7 @@ export default function Home() {
     storageClear()
     router.push({
       pathname: '/test',
-      query: { number: num, name: pName, bias: bias }
+      query: { number: num, name: pName, bias, debug }
     })
   }
   const storageClear = () => {
@@ -38,11 +39,11 @@ export default function Home() {
       <div>test1 ホーム画面</div>
       <div>名前入力や実験条件の選択</div>
 
-      {/* <label>
-          練習：
-          <input type="checkbox" onChange={onChange} name="practise" />
-        </label>
-        <br /> */}
+      <label>
+        debug：
+        <input type='checkbox' onChange={onChange} name='practise' />
+      </label>
+      <br />
       <label>
         参加者番号：
         <input type='number' onChange={onChange} name='number' />
