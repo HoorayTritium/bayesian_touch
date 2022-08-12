@@ -51,17 +51,17 @@ export default function Test() {
   /// / set:1-2は練習、2セットごとに小休憩
   /// / trial{1-27}、3x3x3
   /// / 開始タ−ゲットは画面中心6mm
-  // const dd = [3, 5, 7]
-  // const dt = [3, 5, 7]
-  // const rd = [0, 1, 2]
-  // const MAXSET = 20
+  const dd = [3, 5, 7]
+  const dt = [3, 5, 7]
+  const rd = [0, 1, 2]
+  const MAXSET = 20
   let set = 0
   let trial = 0
   // // FIXME:debug
-  const dd = [7]
-  const dt = [7]
-  const rd = [0, 1, 2]
-  const MAXSET = 4
+  // const dd = [7]
+  // const dt = [7]
+  // const rd = [0, 1, 2]
+  // const MAXSET = 4
   // // ここまで
   const rds = ["左右", "上下", "上下左右"]
   const oneset = dd.length * dt.length * rd.length // 1セットの試行数
