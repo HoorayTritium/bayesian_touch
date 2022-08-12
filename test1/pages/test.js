@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
+import Head from "next/head";
 
 class vector2 {
   constructor(x = 0, y = 0) {
@@ -51,17 +52,17 @@ export default function Test() {
   /// / set:1-2は練習、2セットごとに小休憩
   /// / trial{1-27}、3x3x3
   /// / 開始タ−ゲットは画面中心6mm
-  const dd = [3, 5, 7]
-  const dt = [3, 5, 7]
-  const rd = [0, 1, 2]
-  const MAXSET = 20
+  // const dd = [3, 5, 7]
+  // const dt = [3, 5, 7]
+  // const rd = [0, 1, 2]
+  // const MAXSET = 20
   let set = 0
   let trial = 0
   // // FIXME:debug
-  // const dd = [7]
-  // const dt = [7]
-  // const rd = [0, 1, 2]
-  // const MAXSET = 4
+  const dd = [7]
+  const dt = [7]
+  const rd = [0, 1, 2]
+  const MAXSET = 4
   // // ここまで
   const rds = ["左右", "上下", "上下左右"]
   const oneset = dd.length * dt.length * rd.length // 1セットの試行数
@@ -76,6 +77,7 @@ export default function Test() {
   const margin = (dd[dd.length - 1] / 2 + dt[dt.length - 1] + dtw) * ppm + 2
   let data = [] // 実験結果
   let localData = []
+  let dpr = 1
 
   const tpos = new vector2()
   let ctx
@@ -144,7 +146,8 @@ export default function Test() {
 
   // 実験データを実機に保存
   const dataSave = () => {
-    const url = URL.createObjectURL(new Blob([JSON.stringify(data)], { type: 'application/json' }))
+    const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
+    const url = URL.createObjectURL(new Blob([bom, JSON.stringify(data)], { type: 'application/json' }))
     const a = document.createElement('a')
     document.body.appendChild(a)
     a.download = Date.now() + '.json'
@@ -216,10 +219,11 @@ export default function Test() {
     if (e.type === 'touchmove') {
       e.preventDefault()
     }
-    const mpos = new vector2(e.changedTouches[0].clientX, e.changedTouches[0].clientY)
+    const mpos = new vector2(e.changedTouches[0].clientX, e.changedTouches[0].clientY).scalar(dpr)
     const tw = dd[order[trial] % dd.length]
     const dw = dt[Math.floor(order[trial] / dd.length) % dt.length]
     const dp = rd[Math.floor(order[trial] / (dd.length * dt.length)) % rd.length]
+    // console.log(mpos);
     // 記録
     if (state != 3)
       data.push({
@@ -276,10 +280,13 @@ export default function Test() {
     })
     const c = document.getElementById('canvas')
     // canvasを画面いっぱいに広げる
-    c.width = document.body.offsetWidth
-    c.height = document.body.offsetHeight
-    width = document.body.offsetWidth
-    height = document.body.offsetHeight
+    c.style.width = document.body.offsetWidth + "px"
+    c.style.height = document.body.offsetHeight + "px"
+    c.width = document.body.offsetWidth * window.devicePixelRatio
+    c.height = document.body.offsetHeight * window.devicePixelRatio
+    width = document.body.offsetWidth * window.devicePixelRatio
+    height = document.body.offsetHeight * window.devicePixelRatio
+    dpr = window.devicePixelRatio
     // タッチイベントを登録
     c.addEventListener('touchstart', touchEvent)
     c.addEventListener('touchend', touchEvent)
@@ -311,7 +318,10 @@ export default function Test() {
 
   return (
     <div id="wrapper">
-      <canvas id="canvas" width={0} height={0} />
+      <Head>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
+      <canvas id="canvas" width height />
     </div>
   )
 }
