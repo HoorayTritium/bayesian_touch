@@ -22,7 +22,7 @@ export default function Home () {
   }
   const onSubmit = () => {
     if (!pName) {
-      return
+      // return
     }
     storageClear()
     router.push({

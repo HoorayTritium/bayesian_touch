@@ -154,8 +154,7 @@ export default function Test () {
 
   // 実験データを実機に保存
   const dataSave = () => {
-    const bom = new Uint8Array([0xEF, 0xBB, 0xBF])
-    const url = URL.createObjectURL(new Blob([bom, JSON.stringify(data)], { type: 'application/json' }))
+    const url = URL.createObjectURL(new Blob([JSON.stringify(data)], { type: 'application/json' }))
     const a = document.createElement('a')
     document.body.appendChild(a)
     a.download = Date.now() + '.json'
