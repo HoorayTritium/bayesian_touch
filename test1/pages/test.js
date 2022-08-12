@@ -50,25 +50,26 @@ export default function Test() {
   /// / ターゲット直径{3,5,7}、障害物直径{3,5,7}、障害物配置{rl,ud,rlud},set{1-20}
   /// / set:1-2は練習、2セットごとに小休憩
   /// / trial{1-27}、3x3x3
-  /// / 初期位置は画面中心6mm
-  // const dd = [3, 5, 7]
-  // const dt = [3, 5, 7]
-  // const rd = [0, 1, 2]
-  // let set = 0
-  // let trial = 0
-  // const MAXSET = 20
-  // // FIXME:debug
-  const dd = [7]
-  const dt = [7]
+  /// / 開始タ−ゲットは画面中心6mm
+  const dd = [3, 5, 7]
+  const dt = [3, 5, 7]
   const rd = [0, 1, 2]
   let set = 0
   let trial = 0
-  const MAXSET = 4
+  const MAXSET = 20
+  // // FIXME:debug
+  // const dd = [7]
+  // const dt = [7]
+  // const rd = [0, 1, 2]
+  // let set = 0
+  // let trial = 0
+  // const MAXSET = 4
   // // ここまで
   const rds = ["左右", "上下", "上下左右"]
   const oneset = dd.length * dt.length * rd.length // 1セットの試行数
   let order = [...Array(oneset)].map((_, i) => i)
-  const ppm = 414 / 68.5 // 仮の数字
+  // const ppm = 414 / 68.5 // 仮の数字
+  const ppm = 264 / 2.54// iPad Pro (12.9-Inch) (第2世代)
   const stWidth = 6 // 開始ターゲットの大きさ
   const A = 20 // ターゲット同氏の距離
   const dtw = 0.5 // ターゲットと障害物の幅
