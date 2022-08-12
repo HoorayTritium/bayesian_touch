@@ -68,6 +68,7 @@ export default function Test() {
   const rds = ["左右", "上下", "上下左右"]
   const oneset = dd.length * dt.length * rd.length // 1セットの試行数
   let order = [...Array(oneset)].map((_, i) => i)
+  // FIXME:実機に合わせて変更
   // const ppm = 414 / 68.5 // 仮の数字
   const ppm = 264 / 2.54// iPad Pro (12.9-Inch) (第2世代)
   const stWidth = 6 // 開始ターゲットの大きさ
