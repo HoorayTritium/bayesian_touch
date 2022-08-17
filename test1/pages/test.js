@@ -1,3 +1,6 @@
+// TODO:障害物のフィードバック
+// 今のバイアスの文字（画面上部）
+
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import Head from 'next/head'
