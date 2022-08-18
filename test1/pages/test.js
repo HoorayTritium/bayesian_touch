@@ -155,7 +155,7 @@ export default function Test() {
     // 障害物を描画
     if (st < 0) {
       const d = ((tw + dw) / 2 + dtw) * ppm
-      ctx.fillStyle = 'gray'
+      ctx.fillStyle = 'silver'
       const dposs = getDistractorPos(dr, pos, tw, dw)
       if (Array.isArray(dposs)) {
         dposs.forEach(e => {
@@ -168,7 +168,7 @@ export default function Test() {
       }
     }
     // ターゲット
-    ctx.fillStyle = 'green'
+    ctx.fillStyle = 'lime'
     drawCircle(pos, 0, 0, tw)
 
     // FIXME:情報

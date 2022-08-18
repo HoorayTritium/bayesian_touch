@@ -36,6 +36,7 @@ for (const file of files) {
       if (!err) {
         ptime = time
       }
+      // TODO:bayesian touch分析
     }
     // console.log(data);
   }
