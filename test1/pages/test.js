@@ -1,40 +1,51 @@
-// TODO:障害物のフィードバック
-// 今のバイアスの文字（画面上部）
-
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import Head from 'next/head'
 
 class vector2 {
-  constructor (x = 0, y = 0) {
+  constructor(x = 0, y = 0) {
     this.x = x
     this.y = y
   }
 
   // xとyをセットする
-  set (x, y) {
+  set(x, y) {
     this.x = x
     this.y = y
     return this
   }
 
-  dist (vec) {
+  dist(vec) {
     return Math.sqrt((vec.x - this.x) ** 2 + (vec.y - this.y) ** 2)
   }
 
-  scalar (c) {
+  scalar(c) {
     this.x *= c
     this.y *= c
     return this
   }
 
-  add (vec) {
+  add(vec) {
     this.x += vec.x
     this.y += vec.y
     return this
   }
 
-  static rndPos (x, y) {
+  add2(x, y) {
+    this.x += x
+    this.y += y
+    return this
+  }
+
+  mag() {
+    return Math.sqrt(this.x ** 2 + this.y ** 2)
+  }
+
+  copy() {
+    return new vector2(this.x, this.y)
+  }
+
+  static rndPos(x, y) {
     return new vector2(Math.random() * x, Math.random() * y)
   }
 }
@@ -59,7 +70,7 @@ const toBoolean = (s, def) => {
   return def
 }
 
-export default function Test () {
+export default function Test() {
   // 変数の初期化
   const router = useRouter()
   const { number, name, bias, debug } = router.query
@@ -89,6 +100,7 @@ export default function Test () {
   let data = [] // 実験結果
   let localData = []
   let dpr = 1
+  const fontsize = 50
 
   const tpos = new vector2()
   let ctx
@@ -99,49 +111,81 @@ export default function Test () {
   let state = 0
 
   // ターゲット描画
-  const drawTarget = (pos, dx, dy, w) => {
+  const drawCircle = (pos, dx, dy, w) => {
     ctx.beginPath()
     ctx.arc(pos.x + dx, pos.y + dy, (w * ppm) / 2, 0, Math.PI * 2, true)
     ctx.fill()
   }
 
+  const getDistractorPos = (dr, pos, tw, dw) => {
+    const vecs = []
+    const d = ((tw + dw) / 2 + dtw) * ppm
+    switch (dr) {
+      case 0:// 左右
+        vecs.push(pos.copy().add2(d, 0))
+        vecs.push(pos.copy().add2(-d, 0))
+        break
+      case 1:// 上下
+        vecs.push(pos.copy().add2(0, d))
+        vecs.push(pos.copy().add2(0, -d))
+        break
+      case 2:// 上下左右
+        vecs.push(pos.copy().add2(d, 0))
+        vecs.push(pos.copy().add2(-d, 0))
+        vecs.push(pos.copy().add2(0, d))
+        vecs.push(pos.copy().add2(0, -d))
+        break
+
+      default:
+        break
+    }
+    return vecs
+  }
+
   // ターゲットの描画更新
-  const drawNextTarget = (pos, st = -1) => {
+  const drawNextTarget = (pos, st = -1, dpos = new vector2()) => {
     const tw = st > 0 ? st : dd[order[trial] % dd.length]
     const dw = dt[Math.floor(order[trial] / dd.length) % dt.length]
     const dr = rd[Math.floor(order[trial] / (dd.length * dt.length)) % rd.length]
     ctx.clearRect(0, 0, width, height)
+    ctx.beginPath()
+    ctx.fillStyle = 'black'
+    ctx.rect(0, 0, width, height)
+    ctx.fill()
     // 障害物を描画
     if (st < 0) {
       const d = ((tw + dw) / 2 + dtw) * ppm
       ctx.fillStyle = 'gray'
-      switch (dr) {
-        case 0: // 左右
-          drawTarget(pos, d, 0, dw)
-          drawTarget(pos, -d, 0, dw)
-          break
-        case 1: // 上下
-          drawTarget(pos, 0, d, dw)
-          drawTarget(pos, 0, -d, dw)
-          break
-        case 2: // 上下左右
-          drawTarget(pos, d, 0, dw)
-          drawTarget(pos, -d, 0, dw)
-          drawTarget(pos, 0, d, dw)
-          drawTarget(pos, 0, -d, dw)
-          break
-
-        default:
-          break
+      const dposs = getDistractorPos(dr, pos, tw, dw)
+      if (Array.isArray(dposs)) {
+        dposs.forEach(e => {
+          drawCircle(e, 0, 0, dw)
+        })
+      }
+      if (dpos.mag() !== 0) {
+        ctx.fillStyle = 'yellow'
+        drawCircle(dpos, 0, 0, dw)
       }
     }
     // ターゲット
     ctx.fillStyle = 'green'
-    drawTarget(pos, 0, 0, tw)
+    drawCircle(pos, 0, 0, tw)
 
-    // FIXME:debug
-    ctx.font = '10px メイリオ'
-    ctx.fillText(`trial: ${trial} set: ${set} width: ${width}`, 10, 10)
+    // FIXME:情報
+    ctx.font = '30px メイリオ'
+    // ctx.fillText(`trial: ${trial} set: ${set} width: ${width} bias:${bias} state${state}`, width / 2, 30)
+    ctx.font = fontsize + 'px メイリオ'
+    switch (bias) {
+      case 'バランス':
+        ctx.fillText('現在の目標は「ニュートラル」．できるだけ速く正確にタスクを行ってください．', width / 2, fontsize)
+        break;
+      case '速さ重視':
+        ctx.fillText('現在の目標は「速さ重視」．エラーは気にせずできるだけ速くタスクを行ってください．', width / 2, fontsize)
+        break
+      case '正確重視':
+        ctx.fillText('現在の目標は「正確さ重視」．時間は気にせずできるだけエラーしないようにタスクを行ってください．', width / 2, fontsize)
+        break
+    }
   }
 
   // 次のターゲットの位置
@@ -152,7 +196,7 @@ export default function Test () {
 
   // 座標が画面内（マージンあり）か
   const inDisplay = (vec) => {
-    return vec.x > margin && vec.y > margin && vec.x < width - margin && vec.y < height - margin
+    return vec.x > margin && vec.y > margin + fontsize && vec.x < width - margin && vec.y < height - margin
   }
 
   // 実験データを実機に保存
@@ -170,10 +214,9 @@ export default function Test () {
   // 次の試行へ
   const nextTrial = () => {
     let interval = false
-    // 成功フィードバック、赤く＋音
+    // 成功フィードバック、赤く
     ctx.fillStyle = 'red'
     ctx.fill()
-    // TODO:音を鳴らす
 
     // 次の試行へ
     window.setTimeout(() => {
@@ -191,9 +234,9 @@ export default function Test () {
           tpos.set(width / 2, height / 2)
           drawNextTarget(tpos, stWidth)
           interval = true
-          ctx.fillStyle = 'black'
-          ctx.font = '50px メイリオ'
-          ctx.fillText('休憩です', width / 2 - 50, height / 2 - 50)
+          ctx.fillStyle = 'red'
+          ctx.font = fontsize + 'px メイリオ'
+          ctx.fillText('休憩です', width / 2, height / 2 - 50)
         }
 
         // データ保存
@@ -204,7 +247,7 @@ export default function Test () {
           state = 3
           ctx.clearRect(0, 0, width, height)
           ctx.fillStyle = 'black'
-          ctx.font = '50px メイリオ'
+          ctx.font = fontsize + 'px メイリオ'
           ctx.fillText('終了です', width / 2, height / 2)
         }
       }
@@ -214,7 +257,7 @@ export default function Test () {
       let theta = 0
       do {
         theta = Math.random() * Math.PI * 2
-        console.log(nextTargetPos(tpos, theta))
+        console.log('next', nextTargetPos(tpos, theta))
       } while (!inDisplay(nextTargetPos(tpos, theta)))
       tpos = nextTargetPos(tpos, theta)
       drawNextTarget(tpos)
@@ -233,7 +276,9 @@ export default function Test () {
     const tw = dd[order[trial] % dd.length]
     const dw = dt[Math.floor(order[trial] / dd.length) % dt.length]
     const dp = rd[Math.floor(order[trial] / (dd.length * dt.length)) % rd.length]
-    // console.log(mpos);
+    if (e.type === 'touchend') {
+      console.log('mpos', mpos, tpos, mpos.dist(tpos))
+    }
     // 記録
     if (state != 3) {
       data.push({
@@ -257,7 +302,7 @@ export default function Test () {
     switch (state) {
       case 0:
         // 開始ターゲットをクリック
-        if (mpos.dist(tpos) < stWidth * ppm) {
+        if (mpos.dist(tpos) < stWidth / 2 * ppm) {
           state = 2
           order = shuffle(order)
           nextTrial()
@@ -265,12 +310,24 @@ export default function Test () {
         break
       case 1:
         // ターゲットをタッチ
-        if (mpos.dist(tpos) < dd[order[trial] % dd.length] * ppm) {
+        if (mpos.dist(tpos) < tw / 2 * ppm) {
           state = 2
           nextTrial()
         }
-        // TODO:障害物をタッチ
-        // beap音
+        // 障害物をタッチ
+        // フィードバック、黄色く 200ms後に元の色に戻す
+        const dposs = getDistractorPos(dp, tpos, tw, dw)
+        console.log('dposs', dposs)
+        dposs.forEach(e => {
+          console.log('dist', mpos.dist(e), tw * ppm)
+          if (mpos.dist(e) < dw / 2 * ppm) {
+            drawNextTarget(tpos, -1, e)
+            window.setTimeout(() => {
+              drawNextTarget(tpos)
+            }, preTime)
+          }
+        })
+
         break
 
       case 3:
@@ -307,6 +364,7 @@ export default function Test () {
 
     // 開始ターゲット
     ctx = c.getContext('2d')
+    ctx.textAlign = 'center'
     tpos.set(width / 2, height / 2)
     drawNextTarget(tpos, stWidth)
     ctx.imageSmoothingEnabled = false
@@ -319,6 +377,7 @@ export default function Test () {
     console.log('useEffect')
     console.log(localData)
     if (localData !== null) {
+      state = 1
       set = localData.set
       trial = localData.trial
       order = localData.order

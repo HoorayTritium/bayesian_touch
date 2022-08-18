@@ -28,7 +28,7 @@ for (const file of files) {
       if (type != eventtype) continue
       if (trial === -1)
         targetW = stWidth
-      err = (dist(mx, my, tx, ty) < targetW * ppm) ? 0 : 1
+      err = (dist(mx, my, tx, ty) < targetW / 2 * ppm) ? 0 : 1
       if (trial !== -1) {
         const MT = time - ptime - interval
         s += "\n" + pnum + "," + bias + "," + set + "," + trial + "," + targetW + "," + distractorW + "," + distractorP + "," + MT + "," + err

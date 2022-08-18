@@ -36,7 +36,7 @@ export default function Home () {
 
   return (
     <div className={styles.container}>
-      <div>test1 ホーム画面</div>
+      {/* <div>test1 ホーム画面</div> */}
       <div>名前入力や実験条件の選択</div>
 
       <label>
