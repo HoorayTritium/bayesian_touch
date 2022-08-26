@@ -1,6 +1,5 @@
 const fs = require("fs");
 const libpath = require("path");
-const _ = require("lodash");
 
 const tmp = {};
 const dir = libpath.join(process.cwd(), "data");

@@ -100,7 +100,7 @@ export default function Test() {
   let data = [] // 実験結果
   let localData = []
   let dpr = 1
-  const fontsize = 50
+  const fontsize = 40
 
   const tpos = new vector2()
   let ctx
@@ -179,13 +179,13 @@ export default function Test() {
     ctx.font = fontsize + 'px メイリオ'
     switch (bias) {
       case 'バランス':
-        ctx.fillText('現在の目標は「ニュートラル」．できるだけ速く正確にタスクを行ってください．', width / 2, fontsize)
+        ctx.fillText('現在は「ニュートラル」．できるだけ速く正確にタスクを行ってください．', width / 2, fontsize)
         break;
       case '速さ重視':
-        ctx.fillText('現在の目標は「速さ重視」．エラーは気にせずできるだけ速くタスクを行ってください．', width / 2, fontsize)
+        ctx.fillText('現在は「速さ重視」．ミスタップは気にせずできるだけ速くタスクを行ってください．', width / 2, fontsize)
         break
       case '正確重視':
-        ctx.fillText('現在の目標は「正確さ重視」．時間は気にせずできるだけエラーしないようにタスクを行ってください．', width / 2, fontsize)
+        ctx.fillText('現在は「正確さ重視」．時間は気にせずできるだけミスタップしないようにタスクを行ってください．', width / 2, fontsize)
         break
     }
   }
