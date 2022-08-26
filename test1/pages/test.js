@@ -173,7 +173,9 @@ export default function Test() {
 
     // FIXME:情報
     ctx.font = '30px メイリオ'
-    // ctx.fillText(`trial: ${trial} set: ${set} width: ${width} bias:${bias} state${state}`, width / 2, 30)
+    if (state == 0)
+      ctx.fillText(`ただいま${set / 2}セット終了しました`, width / 2, fontsize * 2)
+    // ctx.fillText(`trial: ${trial} set: ${set} width: ${width} bias:${bias} state${state}`, width / 2, fontsize * 2)
     ctx.font = fontsize + 'px メイリオ'
     switch (bias) {
       case 'バランス':
