@@ -6,6 +6,7 @@ const dir = libpath.join(process.cwd(), "data");
 const files = fs.readdirSync(dir);
 let ptime = 0
 let err = 0
+let ptrial = 0
 
 // FIXME:実験のときの数値に合わせる
 const interval = 200// 成功フィードバック時間
@@ -20,21 +21,28 @@ const dist = (x1, y1, x2, y2) => {
 let s = "\ufeff" + "participant,bias,set,trial,targetW,distractorW,distractorP,MT,Error"
 
 for (const file of files) {
-  const dataArray = JSON.parse(fs.readFileSync(libpath.join(dir, file), "utf-8"))
+  const fileName = libpath.join(dir, file)
+  if (file.charAt(0) === ".") {
+    continue
+  }
+  const dataArray = JSON.parse(fs.readFileSync(fileName, "utf-8"))
   // console.log(dataArray.length);
   for (const data of dataArray) {
     with (data) {
-      if (type != eventtype) continue
+      if (type != "touchcancel" && type != eventtype) continue
       if (trial === -1)
         targetW = stWidth
       err = (dist(mx, my, tx, ty) < targetW / 2 * ppm) ? 0 : 1
-      if (trial !== -1) {
+      if (trial !== -1 && ptrial != trial) {
         const MT = time - ptime - interval
         s += "\n" + pnum + "," + bias + "," + set + "," + trial + "," + targetW + "," + distractorW + "," + distractorP + "," + MT + "," + err
       }
       if (!err) {
         ptime = time
+
       }
+      ptrial = trial
+
       // TODO:bayesian touch分析
     }
     // console.log(data);
