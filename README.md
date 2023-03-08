@@ -1,4 +1,4 @@
-# Bayesian_touch
+# Bayesian Touch Criterion
 
 ## test1:タッチポインティング実験プログラム
 ### 実験条件
