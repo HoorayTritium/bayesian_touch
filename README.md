@@ -18,3 +18,8 @@
 
 ## test2:1の出力ファイル分析用
 実験データを1つのCSVファイルにして出力する。
+
+## 引用
+> 木下大樹，大塲洋介，富張瑠斗，山中祥太，宮下芳明．速さと正確さへの主観的なバイアスがポインティング手法評価の一般化可能性に与える影響，インタラクション2023論文集，pp.78-87，2023．
+
+> Shota Yamanaka, Taiki Kinoshita, Yosuke Oba, Ryuto Tomihari, Homei Miyashita. Varying Subjective Speed-accuracy Biases to Evaluate the Generalizability of Experimental Conclusions on Pointing-facilitation Techniques. In Proceedings of CHI 2023. 
